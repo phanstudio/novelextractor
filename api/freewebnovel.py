@@ -320,7 +320,7 @@ class NovelInfoParser:
         elif current_state == ParserState.AUTHOR:
             author_parts.append(text)
     
-    def _process_collected_data(self, novel, summary_parts, author_parts):
+    def _process_collected_data(self, novel, summary_parts, author_parts): # i have access to summary and chapters
         """Process and assign collected data to novel object"""
         author, genres, status = self._extract_metadata(author_parts)
         novel.author = author
@@ -329,7 +329,7 @@ class NovelInfoParser:
         
         # Clean up summary
         if summary_parts:
-            novel.summary = '\n\n'.join(summary_parts).strip()
+            novel.summary, chapters = self.extract_summary_and_chapters('\n\n'.join(summary_parts).strip())
     
     def _extract_metadata(self, items):
         """Extract author, genres, and status from text items"""
@@ -390,6 +390,20 @@ class NovelInfoParser:
                     return parts[-1].split("-")[-1]
         
         return None
+
+    def extract_summary_and_chapters(self, text):
+        # Extract summary: stop at "Add to Library" or "[ Updated"
+        summary_match = re.search(r"^(.*?)(?:Add to Library|\[ Updated)", text, re.DOTALL)
+        summary = summary_match.group(1).strip() if summary_match else ""
+
+        # Extract chapters: all lines starting with "Chapter" followed by a number
+        chapter_pattern = re.compile(r"Chapter\s+(\d+)[\s:-]+(.+)")
+        chapters = [
+            {"number": int(num), "title": title.strip()}
+            for num, title in chapter_pattern.findall(text)
+        ]
+
+        return summary, chapters
     
     def update(self, novel_path: str) -> Optional[str]:
         """
