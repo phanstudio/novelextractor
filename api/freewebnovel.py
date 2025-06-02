@@ -5,6 +5,7 @@ from bs4 import BeautifulSoup, SoupStrainer
 from enum import Enum
 from dataclasses import dataclass
 from typing import Optional, Dict, Any, List
+import re
 
 # Constants
 BASE_URL = "https://freewebnovel.com"
