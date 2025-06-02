@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify
 # from flask_cors import CORS
-from freewebnovel import FreeWebNovelAPI
+from .freewebnovel import FreeWebNovelAPI
 
 app = Flask(__name__)
 # CORS(app, resources={r"/*": {"origins": "*"}})
