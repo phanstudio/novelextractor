@@ -101,7 +101,14 @@ def get_novel_info():
     try:
         novel_info = novel_api.get_novel_info(novel_path)
         return jsonify({
-            "novel": novel_info.to_dict()
+            "novel": {
+                "title": novel_info.name,
+                "author": novel_info.author,
+                "status": novel_info.status.value,
+                "genres": novel_info.genres,
+                "last_chapter": novel_info.last_chapter,
+                "summary": novel_info.summary,
+            }
         }), 200
         
     except Exception as e:
