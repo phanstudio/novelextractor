@@ -122,8 +122,37 @@ def get_novel_by_slug(novel_slug):
         novel_path = f"novel/{novel_slug}"
         novel_info = novel_api.get_novel_info(novel_path)
         return jsonify({
-            "novel": novel_info.to_dict()
+            "novel": {
+                "title": novel_info.name,
+                "author": novel_info.author,
+                "status": novel_info.status.value,
+                "genres": novel_info.genres,
+                "last_chapter": novel_info.last_chapter,
+                "summary": novel_info.summary,
+            }
         }), 200
+        
+    except Exception as e:
+        return jsonify({"error": f"Failed to get novel info: {str(e)}"}), 500
+
+# Get detailed novel information
+@app.route('/update', methods=['POST'])
+def get_novel_info():
+    """Get detailed information about a specific novel"""
+    data = request.json
+    if not data or 'path' not in data:
+        return jsonify({"error": "Missing 'path' parameter"}), 400
+    
+    novel_path = data['path']
+    
+    try:
+        novel_info = novel_api.update_novel(novel_path)
+        if novel_info:
+            return jsonify({
+                "last_update": novel_info
+            }), 200
+        else:
+            raise(ValueError("update failed"))
         
     except Exception as e:
         return jsonify({"error": f"Failed to get novel info: {str(e)}"}), 500
