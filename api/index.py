@@ -137,7 +137,7 @@ def get_novel_by_slug(novel_slug):
 
 # Get detailed novel information
 @app.route('/update', methods=['POST'])
-def get_novel_info():
+def get_updates():
     """Get detailed information about a specific novel"""
     data = request.json
     if not data or 'path' not in data:
