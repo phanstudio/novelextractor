@@ -137,7 +137,8 @@ class FreeWebNovelSearcher:
         html = resp.text
         
         # Parse only the search results section
-        strainer = SoupStrainer("div", {"class": "ul-list1 ul-list1-2 ss-custom"})
+        # strainer = SoupStrainer("div", {"class": "ul-list1 ul-list1-2 ss-custom"})
+        strainer = SoupStrainer("div", class_=["ul-list1", "ul-list1-2", "ss-custom"])
         soup = BeautifulSoup(html, "html.parser", parse_only=strainer)
         
         return parse_novel_list_section(soup, self.site)
