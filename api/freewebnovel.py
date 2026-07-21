@@ -117,7 +117,7 @@ class FreeWebNovelSearcher:
     def __init__(self, throttler: RequestThrottler, scraper: cloudscraper.CloudScraper):
         self.site = BASE_URL
         self.search_url = f"{self.site}/search"
-        self.search_key = "searchkey"
+        self.search_key = "keyword"#"searchkey"
         self.throttler = throttler
         self.scraper = scraper
 
@@ -131,24 +131,16 @@ class FreeWebNovelSearcher:
         self.throttler.throttle()
         
         payload = {self.search_key: query}
-        resp = self.scraper.post(self.search_url, data=payload)
+        # resp = self.scraper.post(self.search_url, data=payload)
+        resp = self.scraper.get(self.search_url, params=payload)
         
         resp.raise_for_status()
         html = resp.text
-        
+
         # Parse only the search results section
-        # strainer = SoupStrainer("div", {"class": "ul-list1 ul-list1-2 ss-custom"})
-        try:
-            strainer = SoupStrainer("div", class_=["ul-list1"])
-            soup = BeautifulSoup(html, "html.parser", parse_only=strainer)
-            print(soup)
-    
-            strainer2 = SoupStrainer("div", {"class": "ul-list1 ul-list1-2 ss-custom"})
-            soup2 = BeautifulSoup(html, "html.parser", parse_only=strainer2)
-            print(soup2)
-        except Exception as e:
-            print(str(e))
-        
+        strainer = SoupStrainer("div", {"class": "ul-list1 ul-list1-2 ss-custom rank-list"})
+        soup = BeautifulSoup(html, "html.parser", parse_only=strainer)
+
         return parse_novel_list_section(soup, self.site)
 
 class FreeWebNovelCategory:
@@ -182,7 +174,7 @@ class FreeWebNovelCategory:
         resp.raise_for_status()
         
         # Parse only the novels list section
-        strainer = SoupStrainer("div", {"class": "ul-list1 ul-list1-2 ss-custom"})
+        strainer = SoupStrainer("div", {"class": "ul-list1 ul-list1-2 ss-custom rank-list"})
         soup = BeautifulSoup(resp.text, "html.parser", parse_only=strainer)
         
         return parse_novel_list_section(soup, BASE_URL)
